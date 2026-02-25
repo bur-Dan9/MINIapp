@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Инициализация Telegram WebApp
+    const tg = window.Telegram.WebApp;
+    if (tg) {
+        tg.ready();
+        tg.expand();
+    }
+
     // Scroll Reveal Animation
     const reveals = document.querySelectorAll('.reveal');
 
@@ -64,17 +71,28 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.disabled = true;
             btn.style.opacity = '0.7';
 
-            // Simulate submission
+            // Собираем данные из инпутов
+            const inputs = waitlistForm.querySelectorAll('input');
+            const data = {
+                name: inputs[0].value,
+                niche: inputs[1].value,
+                contact: inputs[2].value
+            };
+
+            // Отправляем данные боту
+            if (tg) {
+                tg.sendData(JSON.stringify(data));
+            }
+
+            // Visual feedback
             setTimeout(() => {
-                btn.innerText = 'ГОТОВО! МЫ СВЯЖЕМСЯ С ВАМИ';
+                btn.innerText = 'ГОТОВО! ДАННЫЕ ОТПРАВЛЕНЫ';
                 btn.classList.remove('btn-main');
-                btn.style.background = '#00ff88'; // Success green
+                btn.style.background = '#00ff88';
                 btn.style.boxShadow = '0 0 20px rgba(0, 255, 136, 0.4)';
 
-                // Clear form
-                e.target.reset();
+                waitlistForm.reset();
 
-                // Reset/Close after delay
                 setTimeout(() => {
                     closeModal();
                     setTimeout(() => {
@@ -85,22 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         btn.style.background = '';
                     }, 500);
                 }, 2000);
-            }, 1000);
+            }, 800);
         });
     }
 
-    // Telegram Mini App feedback (if available)
-    if (window.Telegram && window.Telegram.WebApp) {
-        const webapp = window.Telegram.WebApp;
-        webapp.ready();
-        webapp.expand();
-
-        // Impact vibration on button clicks
+    // Telegram Mini App haptic feedback
+    if (tg && tg.HapticFeedback) {
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                if (webapp.HapticFeedback) {
-                    webapp.HapticFeedback.impactOccurred('medium');
-                }
+                tg.HapticFeedback.impactOccurred('medium');
             });
         });
     }
