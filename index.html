@@ -59,7 +59,6 @@
 
         // ── Waitlist form ─────────────────────────────────────────────────
         const API_URL = "https://ai-bot-a3aj.onrender.com/api/leads/miniapp";
-        const BOT_LINK = "https://t.me/AWMOS_bot?start=";
 
         document.addEventListener("submit", async (e) => {
             if (e.target.id !== "waitlistForm") return;
@@ -67,27 +66,18 @@
 
             const form = e.target;
             const tg = window.Telegram?.WebApp;
-            const statusEl = document.getElementById("waitlistStatus");
-            const backBtn = document.getElementById("backToBotBtn");
             const submitBtn = form.querySelector('button[type="submit"]');
-
             const name = form.querySelector('[data-lead="name"]')?.value?.trim() || "";
             const niche = form.querySelector('[data-lead="niche"]')?.value?.trim() || "";
 
             // Must run inside Telegram Mini App
             if (!tg?.initData) {
-                if (statusEl) {
-                    statusEl.textContent = "⚠️ Откройте mini app через Telegram-бота.";
-                    statusEl.classList.remove("hidden");
-                }
+                alert("⚠️ Откройте mini app через Telegram-бота.");
                 return;
             }
 
             if (!name || !niche) {
-                if (statusEl) {
-                    statusEl.textContent = "Заполните имя и нишу.";
-                    statusEl.classList.remove("hidden");
-                }
+                alert("Заполните имя и нишу.");
                 return;
             }
 
@@ -97,7 +87,6 @@
                 submitBtn.style.opacity = "0.75";
                 submitBtn.textContent = "ОТПРАВЛЯЮ...";
             }
-            if (statusEl) statusEl.textContent = "";
 
             try {
                 const res = await fetch(API_URL, {
@@ -114,20 +103,19 @@
 
                 if (!res.ok || !data.ok) throw new Error(data.error || `Ошибка ${res.status}`);
 
-                // Success — disable submit, show result block
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.style.opacity = "0.5";
-                    submitBtn.textContent = "ОТПРАВЛЕНО";
-                }
+                // Success: hide form, show success block
+                form.classList.add("hidden");
 
-                const resultEl = document.getElementById("waitlistResult");
-                if (statusEl) {
-                    statusEl.textContent =
+                const successEl = document.getElementById("waitlistSuccess");
+                const successTextEl = document.getElementById("waitlistSuccessText");
+                const backBtn = document.getElementById("backToBotBtn");
+
+                if (successTextEl) {
+                    successTextEl.textContent =
                         `✅ Спасибо, ${name}! Заявка принята. Ниша: ${niche}. Я уже отправила вам сообщение в боте. ` +
                         `Если сообщение не пришло — откройте чат и нажмите Start один раз.`;
                 }
-                if (resultEl) resultEl.classList.remove("hidden");
+                if (successEl) successEl.classList.remove("hidden");
                 if (backBtn) {
                     backBtn.addEventListener("click", () => {
                         window.Telegram?.WebApp?.close?.();
@@ -136,10 +124,7 @@
 
             } catch (err) {
                 console.error("[waitlist] error:", err);
-                if (statusEl) {
-                    statusEl.textContent = "❌ Ошибка отправки. Попробуйте ещё раз.";
-                    statusEl.classList.remove("hidden");
-                }
+                alert(`❌ Ошибка отправки: ${err.message || "Попробуйте ещё раз."}`);
                 if (submitBtn) {
                     submitBtn.disabled = false;
                     submitBtn.style.opacity = "1";

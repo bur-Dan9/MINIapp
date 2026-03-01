@@ -60,18 +60,19 @@ const WaitlistModal = () => {
                         >
                             СООБЩИТЬ МНЕ О ЗАПУСКЕ
                         </button>
-
-                        <div id="waitlistResult" className="pt-6 hidden">
-                            <div id="waitlistStatus" className="text-sm text-muted-text leading-relaxed"></div>
-                            <button
-                                type="button"
-                                id="backToBotBtn"
-                                className="w-full mt-6 inline-flex items-center justify-center bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all"
-                            >
-                                ВЕРНУТЬСЯ В БОТА
-                            </button>
-                        </div>
                     </form>
+
+                    {/* Success block — shown after submit, form is hidden */}
+                    <div id="waitlistSuccess" className="hidden">
+                        <div className="pt-4 text-sm text-muted-text leading-relaxed" id="waitlistSuccessText"></div>
+                        <button
+                            type="button"
+                            id="backToBotBtn"
+                            className="w-full mt-8 inline-flex items-center justify-center bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all"
+                        >
+                            ВЕРНУТЬСЯ В БОТА
+                        </button>
+                    </div>
 
                     <div className="mt-10 pt-8 border-t border-card-border flex items-center justify-center gap-4">
                         <div className="flex -space-x-3">
