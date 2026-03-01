@@ -11,12 +11,17 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
         rel="stylesheet">
+    <!-- Telegram Mini App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 
 <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
+        // Notify Telegram that Mini App is ready (required for initData to be populated)
+        window.Telegram?.WebApp?.ready();
+
         // ── Modal open ────────────────────────────────────────────────────
         document.addEventListener("click", (e) => {
             const openBtn = e.target.closest('[data-open-waitlist="1"]');
