@@ -60,14 +60,17 @@ const WaitlistModal = () => {
                         >
                             СООБЩИТЬ МНЕ О ЗАПУСКЕ
                         </button>
-                        <div id="waitlistStatus" className="text-sm text-muted-text pt-3 hidden whitespace-pre-line"></div>
-                        <button
-                            type="button"
-                            id="backToBotBtn"
-                            className="hidden w-full bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-4 rounded-2xl font-bold text-base shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all mt-3"
-                        >
-                            ВЕРНУТЬСЯ В БОТА
-                        </button>
+
+                        <div id="waitlistResult" className="pt-6 hidden">
+                            <div id="waitlistStatus" className="text-sm text-muted-text leading-relaxed"></div>
+                            <button
+                                type="button"
+                                id="backToBotBtn"
+                                className="w-full mt-6 inline-flex items-center justify-center bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all"
+                            >
+                                ВЕРНУТЬСЯ В БОТА
+                            </button>
+                        </div>
                     </form>
 
                     <div className="mt-10 pt-8 border-t border-card-border flex items-center justify-center gap-4">

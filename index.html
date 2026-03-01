@@ -114,31 +114,24 @@
 
                 if (!res.ok || !data.ok) throw new Error(data.error || `Ошибка ${res.status}`);
 
-                // Success — show status text, keep form intact
-                if (statusEl) {
-                    statusEl.textContent =
-                        `✅ Спасибо, ${name}! Заявка принята. Ниша: ${niche}. Я уже отправила вам сообщение в боте. ` +
-                        `Если сообщение не пришло — откройте чат и нажмите Start один раз.`;
-                    statusEl.classList.remove("hidden");
-                }
-
-                // Disable submit to prevent double send
+                // Success — disable submit, show result block
                 if (submitBtn) {
                     submitBtn.disabled = true;
                     submitBtn.style.opacity = "0.5";
                     submitBtn.textContent = "ОТПРАВЛЕНО";
                 }
 
-                // Show "back to bot" button with correct deeplink
+                const resultEl = document.getElementById("waitlistResult");
+                if (statusEl) {
+                    statusEl.textContent =
+                        `✅ Спасибо, ${name}! Заявка принята. Ниша: ${niche}. Я уже отправила вам сообщение в боте. ` +
+                        `Если сообщение не пришло — откройте чат и нажмите Start один раз.`;
+                }
+                if (resultEl) resultEl.classList.remove("hidden");
                 if (backBtn) {
-                    const leadId = data.lead_id || data.id || data.leadId;
-                    backBtn.classList.remove("hidden");
-                    backBtn.onclick = () => {
-                        if (leadId) {
-                            tg.openTelegramLink(BOT_LINK + "lead_" + leadId);
-                        }
-                        setTimeout(() => tg.close?.(), 300);
-                    };
+                    backBtn.addEventListener("click", () => {
+                        window.Telegram?.WebApp?.close?.();
+                    });
                 }
 
             } catch (err) {
