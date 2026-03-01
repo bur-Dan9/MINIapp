@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, User, Briefcase, MessageSquare } from 'lucide-react';
+import { X, User, Briefcase } from 'lucide-react';
 
 const WaitlistModal = () => {
     return (
@@ -54,23 +54,19 @@ const WaitlistModal = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-1">
-                            <div className="relative">
-                                <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-text" />
-                                <input
-                                    type="text"
-                                    data-lead="contact"
-                                    placeholder="Telegram @username или телефон"
-                                    className="w-full bg-bg/50 border border-card-border rounded-2xl py-4 pl-12 pr-4 text-text focus:outline-none focus:border-brand-purple transition-all"
-                                />
-                            </div>
-                        </div>
-
                         <button
                             type="submit"
                             className="w-full bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all mt-4"
                         >
                             СООБЩИТЬ МНЕ О ЗАПУСКЕ
+                        </button>
+                        <div id="waitlistStatus" className="text-sm text-muted-text pt-3 hidden whitespace-pre-line"></div>
+                        <button
+                            type="button"
+                            id="backToBotBtn"
+                            className="hidden w-full bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-4 rounded-2xl font-bold text-base shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all mt-3"
+                        >
+                            ВЕРНУТЬСЯ В БОТА
                         </button>
                     </form>
 

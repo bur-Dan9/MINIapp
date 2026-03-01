@@ -17,128 +17,138 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script>
-        (() => {
-            const API = "https://ai-bot-a3aj.onrender.com/api/leads/website";
-
-            // --- Открытие модалки (с делегированием, чтобы работало в React) ---
-            document.addEventListener("click", (e) => {
-                // Если кликнули на саму кнопку или элемент внутри неё (svg, текст)
-                const openBtn = e.target.closest('[data-open-waitlist="1"]');
-                if (openBtn) {
-                    e.preventDefault();
-                    const modalOverlay = document.getElementById("modalOverlay");
-                    if (modalOverlay) {
-                        modalOverlay.style.display = "flex";
-                        document.body.style.overflow = "hidden";
-                        modalOverlay.classList.add("active");
-                    }
-                }
-            });
-
-            // --- Закрытие модалки ---
-            const closeModal = () => {
-                const modalOverlay = document.getElementById("modalOverlay");
-                if (!modalOverlay) return;
-                modalOverlay.classList.remove("active");
-                document.body.style.overflow = "";
-                setTimeout(() => { modalOverlay.style.display = "none"; }, 150);
-            };
-
-            document.addEventListener("click", (e) => {
-                // Закрытие по крестику
-                if (e.target.closest("#closeModal")) {
-                    e.preventDefault();
-                    closeModal();
-                }
-                // Закрытие по клику на фон
-                if (e.target.id === "modalOverlay") {
-                    closeModal();
-                }
-            });
-
-            // --- Submit формы (делегирование на весь документ) ---
-            document.addEventListener("submit", async (e) => {
-                if (e.target.id !== "waitlistForm") return;
-
+        // ── Modal open ────────────────────────────────────────────────────
+        document.addEventListener("click", (e) => {
+            const openBtn = e.target.closest('[data-open-waitlist="1"]');
+            if (openBtn) {
                 e.preventDefault();
-                const form = e.target;
-
-                const nameEl = form.querySelector('[data-lead="name"]');
-                const nicheEl = form.querySelector('[data-lead="niche"]');
-                const contactEl = form.querySelector('[data-lead="contact"]');
-                const submitBtn = form.querySelector('button[type="submit"]');
-
-                const name = (nameEl?.value || "").trim();
-                const niche = (nicheEl?.value || "").trim();
-                const rawContact = (contactEl?.value || "").trim();
-                const contact = rawContact.replace(/\s+/g, "");
-
-                const tgLinkPattern = /^https?:\/\/t\.me\/[A-Za-z0-9_]{4,}$/i;
-                const tgAtPattern = /^@[A-Za-z0-9_]{4,}$/;
-                const phonePattern = /^[+]?[0-9]{7,20}$/;
-
-                const isTg = tgAtPattern.test(contact) || tgLinkPattern.test(contact);
-                const isPhone = phonePattern.test(contact);
-
-                if (!name || !niche || !contact) {
-                    alert("Заполните имя, нишу и контакт.");
-                    return;
+                const overlay = document.getElementById("modalOverlay");
+                if (overlay) {
+                    overlay.style.display = "flex";
+                    document.body.style.overflow = "hidden";
+                    overlay.classList.add("active");
                 }
-                if (!isTg && !isPhone) {
-                    alert("Введите Telegram (@username или t.me/username) или номер телефона.");
-                    return;
+            }
+        });
+
+        // ── Modal close (X button) ────────────────────────────────────────
+        document.addEventListener("click", (e) => {
+            if (e.target.closest("#closeModal")) {
+                const overlay = document.getElementById("modalOverlay");
+                if (!overlay) return;
+                overlay.classList.remove("active");
+                document.body.style.overflow = "";
+                setTimeout(() => { overlay.style.display = "none"; }, 150);
+            }
+        });
+
+        // ── Modal close (backdrop only) ───────────────────────────────────
+        document.addEventListener("click", (e) => {
+            if (e.target.id === "modalOverlay") {
+                const overlay = e.target;
+                overlay.classList.remove("active");
+                document.body.style.overflow = "";
+                setTimeout(() => { overlay.style.display = "none"; }, 150);
+            }
+        });
+
+        // ── Waitlist form ─────────────────────────────────────────────────
+        const API_URL = "https://ai-bot-a3aj.onrender.com/api/leads/miniapp";
+        const BOT_LINK = "https://t.me/AWMOS_bot?start=";
+
+        document.addEventListener("submit", async (e) => {
+            if (e.target.id !== "waitlistForm") return;
+            e.preventDefault();
+
+            const form = e.target;
+            const tg = window.Telegram?.WebApp;
+            const statusEl = document.getElementById("waitlistStatus");
+            const backBtn = document.getElementById("backToBotBtn");
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            const name = form.querySelector('[data-lead="name"]')?.value?.trim() || "";
+            const niche = form.querySelector('[data-lead="niche"]')?.value?.trim() || "";
+
+            // Must run inside Telegram Mini App
+            if (!tg?.initData) {
+                if (statusEl) {
+                    statusEl.textContent = "⚠️ Откройте mini app через Telegram-бота.";
+                    statusEl.classList.remove("hidden");
+                }
+                return;
+            }
+
+            if (!name || !niche) {
+                if (statusEl) {
+                    statusEl.textContent = "Заполните имя и нишу.";
+                    statusEl.classList.remove("hidden");
+                }
+                return;
+            }
+
+            // Loading state
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = "0.75";
+                submitBtn.textContent = "ОТПРАВЛЯЮ...";
+            }
+            if (statusEl) statusEl.textContent = "";
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        initData: tg.initData,
+                        form: { name, niche, contact: "" }
+                    }),
+                });
+
+                const data = await res.json().catch(() => ({}));
+                console.log("[waitlist] response:", res.status, data);
+
+                if (!res.ok || !data.ok) throw new Error(data.error || `Ошибка ${res.status}`);
+
+                // Success — show status text, keep form intact
+                if (statusEl) {
+                    statusEl.textContent =
+                        `✅ Спасибо, ${name}! Заявка принята. Ниша: ${niche}. Я уже отправила вам сообщение в боте. ` +
+                        `Если сообщение не пришло — откройте чат и нажмите Start один раз.`;
+                    statusEl.classList.remove("hidden");
                 }
 
-                const payload = {
-                    name,
-                    niche,
-                    tg: isTg ? contact : "",
-                    contact
-                };
-
-                const originalText = submitBtn ? submitBtn.textContent : "";
-
-                try {
-                    if (submitBtn) {
-                        submitBtn.textContent = "ОТПРАВКА...";
-                        submitBtn.disabled = true;
-                        submitBtn.style.opacity = "0.75";
-                    }
-
-                    const res = await fetch(API, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                    });
-
-                    const data = await res.json();
-                    if (!data.ok) throw new Error(data.error || "Ошибка");
-
-                    // Success UI
-                    form.innerHTML = `
-        <div class="text-center pt-2">
-          <div class="text-4xl mb-4">✅</div>
-          <h4 class="text-2xl font-bold text-text mb-3">Заявка принята</h4>
-          <p class="text-sm text-muted-text leading-relaxed mb-6">
-            Чтобы Soff смогла прислать уведомление о запуске и показать демо сервиса — нажмите кнопку ниже и нажмите <b>Start</b>.
-          </p>
-          <a href="${data.deeplink || "https://t.me/AWMOS_bot"}" target="_blank"
-            class="w-full inline-flex items-center justify-center bg-gradient-to-r from-brand-purple to-brand-magenta text-white py-5 rounded-2xl font-bold text-lg shadow-lg shadow-brand-purple/20 hover:scale-[1.02] transition-all">
-            ПЕРЕЙТИ В TELEGRAM
-          </a>
-        </div>
-      `;
-                } catch (err) {
-                    console.error(err);
-                    alert("Ошибка отправки. Попробуйте ещё раз.");
-                    if (submitBtn) {
-                        submitBtn.textContent = originalText || "СООБЩИТЬ МНЕ О ЗАПУСКЕ";
-                        submitBtn.disabled = false;
-                        submitBtn.style.opacity = "1";
-                    }
+                // Disable submit to prevent double send
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = "0.5";
+                    submitBtn.textContent = "ОТПРАВЛЕНО";
                 }
-            });
-        })();
+
+                // Show "back to bot" button with correct deeplink
+                if (backBtn) {
+                    const leadId = data.lead_id || data.id || data.leadId;
+                    backBtn.classList.remove("hidden");
+                    backBtn.onclick = () => {
+                        if (leadId) {
+                            tg.openTelegramLink(BOT_LINK + "lead_" + leadId);
+                        }
+                        setTimeout(() => tg.close?.(), 300);
+                    };
+                }
+
+            } catch (err) {
+                console.error("[waitlist] error:", err);
+                if (statusEl) {
+                    statusEl.textContent = "❌ Ошибка отправки. Попробуйте ещё раз.";
+                    statusEl.classList.remove("hidden");
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = "1";
+                    submitBtn.textContent = "СООБЩИТЬ МНЕ О ЗАПУСКЕ";
+                }
+            }
+        });
     </script>
 </body>
 
