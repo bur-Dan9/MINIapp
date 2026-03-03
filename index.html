@@ -20,7 +20,9 @@
     <script type="module" src="/src/main.jsx"></script>
     <script>
         // Notify Telegram that Mini App is ready (required for initData to be populated)
-        window.Telegram?.WebApp?.ready();
+        document.addEventListener("DOMContentLoaded", () => {
+            window.Telegram?.WebApp?.ready?.();
+        });
 
         // ── Modal open ────────────────────────────────────────────────────
         document.addEventListener("click", (e) => {
@@ -117,9 +119,7 @@
                 }
                 if (successEl) successEl.classList.remove("hidden");
                 if (backBtn) {
-                    backBtn.addEventListener("click", () => {
-                        window.Telegram?.WebApp?.close?.();
-                    });
+                    backBtn.onclick = () => window.Telegram?.WebApp?.close?.();
                 }
 
             } catch (err) {
