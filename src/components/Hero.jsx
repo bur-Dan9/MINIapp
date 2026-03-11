@@ -84,11 +84,11 @@ const Hero = ({ onJoinWaitlist }) => {
             <Metrics />
 
             {/* Value Cards Row */}
-            <div className="w-full overflow-x-clip">
+            <div className="w-full overflow-x-clip px-4 lg:px-16">
                 <div
                     ref={scrollRef}
                     onScroll={handleScroll}
-                    className="flex overflow-x-auto pb-8 md:grid md:grid-cols-3 gap-6 snap-x snap-mandatory hide-scrollbar"
+                    className="flex overflow-x-auto pb-8 md:grid md:grid-cols-3 gap-6 snap-x snap-mandatory hide-scrollbar pt-6"
                 >
                     <div className="glass-card p-8 rounded-3xl flex flex-col items-center text-center group hover:translate-y-[-5px] transition-all w-[85vw] shrink-0 md:w-auto snap-center">
                         <div className="w-14 h-14 rounded-2xl bg-brand-purple/10 flex items-center justify-center mb-6 text-brand-purple">
