@@ -20,9 +20,9 @@ const Hero = ({ onJoinWaitlist }) => {
                 {/* Background Glows */}
                 <div className="absolute bottom-[10%] left-0 w-[300px] h-[300px] bg-brand-magenta/10 dark:bg-brand-magenta/5 rounded-full blur-[100px] pointer-events-none -z-0" />
 
-                <div className="w-full px-4 lg:px-16 flex flex-col lg:flex-row gap-6 items-center z-10 relative">
+                <div className="w-full px-4 lg:px-16 flex flex-col lg:flex-row justify-center gap-6 items-center z-10 relative">
                     {/* Left Content */}
-                    <div className="min-w-0 w-full lg:w-1/2 flex flex-col items-start text-left">
+                    <div className="min-w-0 w-full lg:w-1/2 flex flex-col items-center text-center">
                         <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-brand-purple/10 text-brand-purple text-xs font-bold mb-6 border border-brand-purple/20 animate-pulse max-w-full">
                             <span className="relative flex h-2 w-2 shrink-0">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-purple opacity-75"></span>
@@ -42,7 +42,7 @@ const Hero = ({ onJoinWaitlist }) => {
                             Единая AI-экосистема в Telegram, которая заменяет целый отдел маркетинга. Пока вы отдыхаете, наши агенты работают 24/7.
                         </p>
 
-                        <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex flex-wrap items-center justify-center gap-3">
                             <button
                                 onClick={onJoinWaitlist}
                                 className="bg-gradient-to-r from-brand-purple to-brand-magenta text-white px-6 py-3 rounded-full font-bold text-base shadow-lg shadow-brand-purple/25 hover:scale-105 transition-all flex items-center gap-2"
